@@ -41,7 +41,7 @@ int main(void)
 
 	cls();
 	printf("Pico Acorn Atom Emulator\n");
-    printf(NOW "\n");
+  printf(NOW "\n");
 
 	printf("Init TFT\n");
 	ILI9341_Init(50 * 1000 * 1000); // SPI pus frequency

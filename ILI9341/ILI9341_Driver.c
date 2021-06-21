@@ -92,6 +92,7 @@
 #include "ILI9341_Driver.h"
 #include "ILI9341_DMA.h"
 #include "status.h"
+#include "hexout.h"
 
 #define DEBUG_LCD	0
 
@@ -138,7 +139,7 @@ void ILI9341_SPI_Init(uint baudrate)
 }
 
 /*Send data (char) to LCD*/
-inline void ILI9341_SPI_Send(unsigned char SPI_Data)
+void ILI9341_SPI_Send(unsigned char SPI_Data)
 {
 	spi_write_blocking(ILI9341_SPI,&SPI_Data,1);
 }

@@ -15,6 +15,7 @@
 #include "Atom.h"
 
 #define DEBUG_FREQ 0
+#define DEBUG_MODE 1
 
 mc6847_t	MC6847_Screen;
 
@@ -40,9 +41,9 @@ static const g_mode_t ModeTable[] =
 	{	64,		64,		16,		2,		8/2,	4,		3,		1024	},			// CG1
 	{	128,	64,		16,		1,		8/1,	4,		3,		1024	},			// RG1
 	{	128,	64,		32,		2,		8/2,	2,		3,		2048	},			// CG1
-	{	128,	96,		32,		1,		8/1,	2,		2,		1536	},			// RG2
+	{	128,	96,		16,		1,		8/1,	2,		2,		1536	},			// RG2
 	{	128,	96,		32,		2,		8/2,	2,		2,		3072	},			// CG2
-	{	128,	192,	32,		1,		8/1,	2,		1,		3072	},			// RG3
+	{	128,	192,	16,		1,		8/1,	2,		1,		3072	},			// RG3
 	{	128,	192,	32,		2,		8/2,	2,		1,		6144	},			// CG3
 	{	256,	192,	32,		1,		8/1,	1,		1,		6144	}			// RG4
 };
@@ -338,19 +339,19 @@ void MC6847_UpdateGraph(void)
 			for(PxNo=0; PxNo < ModeTable[Mode].pmul; PxNo++)
 			{
 				if (ModeTable[Mode].bpp==2)
-					Colour=SwapColour(CGColours[MC6847_GetCSS()][(Pixels & 0xC0) >> 6]);
+					Colour=CGColours[MC6847_GetCSS()][(Pixels & 0xC0) >> 6];
 				else
-					Colour=SwapColour(RGColours[MC6847_GetCSS()][(Pixels & 0x80) >> 7]);
+					Colour=RGColours[MC6847_GetCSS()][(Pixels & 0x80) >> 7];
 
 				Pixels=Pixels << ModeTable[Mode].bpp;
 
 				for(PxRep=0; PxRep < ModeTable[Mode].xmul; PxRep++)
-					LineBuff[LinePtr++]=SwapColour(Colour);
+					LineBuff[LinePtr++]=Colour;
 			}
 		}
 		for(LineNo=(YCo*ModeTable[Mode].ymul); LineNo < (YCo*ModeTable[Mode].ymul)+ModeTable[Mode].ymul; LineNo++)
 		{
-			ILI9341_WriteScreen(XOFFSET,YOFFSET+LineNo,XOFFSET+255,YOFFSET+LineNo+1,(uint8_t *)LineBuff,512,BLOCK_DUMMY_RECEIVE);
+			ILI9341_WriteScreen(XOFFSET,YOFFSET+LineNo,XOFFSET+255,YOFFSET+LineNo+1,(uint8_t *)LineBuff,sizeof(LineBuff),BLOCK_DUMMY_RECEIVE);
 		}
 	}
 }
