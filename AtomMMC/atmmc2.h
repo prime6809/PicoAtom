@@ -50,7 +50,7 @@ typedef void (*WORKERFN)(void);
 // Debugging controls for Worker functions, core and Interface
 #define DEBUG_ATOMMMC_WFN  0
 #define DEBUG_ATOMMMC_IF   0
-#define LOG_CMD	         0
+#define LOG_CMD	         0 
 
 #ifdef INCLUDE_SDDOS
 

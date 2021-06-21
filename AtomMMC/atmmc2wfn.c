@@ -374,7 +374,7 @@ void saveDrivesImpl(void)
 }
 
 
-void wfnOpenSDDOSImg(void)
+void wfnOpenSDDOSImg(void) 
 {
    // globalData[0] = drive number 0..3
    // globalData[1]... image filename

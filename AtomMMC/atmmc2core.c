@@ -45,7 +45,7 @@ extern /*DSTATUS*/ unsigned char disk_initialize (BYTE);
 // cache of the value written to port 0x0e
 //
 BYTE byteValueLatch;
-
+ 
 #if LOG_CMD == 1
 void log_cmd(BYTE	cmd)
 {

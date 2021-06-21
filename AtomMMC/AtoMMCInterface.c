@@ -70,7 +70,7 @@ uint8_t AtoMMCRead(uint16_t	Addr)
 	Result=InterfaceData;
 
 	logc0(DEBUG_ATOMMMC_IF,"AtoMMCRead(%02X)=%02X\n",InterfaceAddr,InterfaceData);
-	at_process();
+	at_process(); 
 
 	return Result;
 }
