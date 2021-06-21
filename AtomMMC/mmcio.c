@@ -5,6 +5,7 @@
 #include <avr/io.h>
 #elif (PLATFORM==PLATFORM_STM32)
 #elif (PLATFORM==PLATFORM_PIPICO)
+#define SPI_BAUD_MHZ 48
 #endif
 #include "mmcio.h"
 
@@ -105,9 +106,9 @@ void INIT_SPI(void)
 
 	LL_SPI_Enable(DISK_SPI);
 #elif  (PLATFORM==PLATFORM_PIPICO)
-   logc0(DEBUG_SD,"SD_SPI_Init:Init SPI\n");
+   logc0(DEBUG_SD,"SD_SPI_Init:Init SPI %dMHz\n",SPI_BAUD_MHZ);
    // This example will use SPI0 at 0.5MHz.
-   spi_init(SD_SPI, 10 * 1000 * 1000);
+   spi_init(SD_SPI, SPI_BAUD_MHZ * 1000 * 1000);
    spi_set_format(SD_SPI,  8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
    gpio_set_function(SD_SPI_MOSI_Pin, GPIO_FUNC_SPI);
    gpio_set_function(SD_SPI_MISO_Pin, GPIO_FUNC_SPI);

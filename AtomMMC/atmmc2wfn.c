@@ -65,8 +65,6 @@ void GetWildcard(void)
 	int	   WildPos		= -1;
 	int	   LastSlash	= -1;
 	
-	//log0("GetWildcard() %s\n",(const char *)globalData);
-	
 	while ((Idx<strlen((const char*)globalData)) && (WildPos<0)) 
 	{
 		// Check for wildcard character
@@ -79,9 +77,7 @@ void GetWildcard(void)
 			
 		Idx++;
 	}
-	
-	//log0("GetWildcard() Idx=%d, WildPos=%d, LastSlash=%d\n",Idx,WildPos,LastSlash);
-	
+		
 	if(WildPos>-1)
 	{
 		if(LastSlash>-1)
@@ -110,8 +106,6 @@ void GetWildcard(void)
 		strncpy(WildPattern,"*",WILD_LEN);
 #endif
 	}
-	
-	//log0("GetWildcard() globalData=%s WildPattern=%s\n",(const char*)globalData,WildPattern); 
 }
 
 void wfnDirectoryOpen(void)
@@ -149,8 +143,8 @@ void wfnDirectoryRead(void)
 		// Check to see if filename matches current wildcard
 		//
 		Match=wildcmp(WildPattern,filinfo.fname);
-		//log0("WildPattern=%s, filinfo.fname=%s, Match=%d\n",WildPattern,filinfo.fname,Match);
-		if(Match)
+		
+      if(Match)
 		{
 			len = (char)strlen(filinfo.fname);
 
@@ -229,7 +223,7 @@ void wfnSetCWDirectory(void)
 
 static BYTE fileOpen(BYTE mode)
 {
-	log0("fileOpen(mode=%02X,name=%s)\n",mode,(char*)globalData);
+	logc0(DEBUG_ATOMMMC_WFN,"fileOpen(mode=%02X,name=%s)\n",mode,(char*)globalData);
    return 0x40 | f_open(&fil, (const char*)globalData, mode);
 }
 

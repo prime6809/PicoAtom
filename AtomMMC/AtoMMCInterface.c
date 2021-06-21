@@ -55,7 +55,7 @@ void AtoMMCWrite(uint16_t	Addr,
 	InterfaceAddr=(Addr & ADDRESS_MASK);
 	InterfaceData=Data;
 
-//	log0("AtoMMCWrite(%02X,%02X)\n",InterfaceAddr,InterfaceData);
+	logc0(DEBUG_ATOMMMC_IF,"AtoMMCWrite(%02X,%02X)\n",InterfaceAddr,InterfaceData);
 	at_process();
 }
 
@@ -69,7 +69,7 @@ uint8_t AtoMMCRead(uint16_t	Addr)
 
 	Result=InterfaceData;
 
-//	log0("AtoMMCRead(%02X)=%02X\n",InterfaceAddr,InterfaceData);
+	logc0(DEBUG_ATOMMMC_IF,"AtoMMCRead(%02X)=%02X\n",InterfaceAddr,InterfaceData);
 	at_process();
 
 	return Result;

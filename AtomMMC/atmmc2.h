@@ -47,7 +47,10 @@ typedef void (*WORKERFN)(void);
 
 #define WFUNC(x)  extern void wfn##x(void); const WORKERFN WFN_##x = wfn##x;
 
-
+// Debugging controls for Worker functions, core and Interface
+#define DEBUG_ATOMMMC_WFN  0
+#define DEBUG_ATOMMMC_IF   0
+#define LOG_CMD	         0
 
 #ifdef INCLUDE_SDDOS
 

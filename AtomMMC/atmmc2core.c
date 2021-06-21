@@ -46,8 +46,6 @@ extern /*DSTATUS*/ unsigned char disk_initialize (BYTE);
 //
 BYTE byteValueLatch;
 
-#define LOG_CMD	0
-
 #if LOG_CMD == 1
 void log_cmd(BYTE	cmd)
 {
@@ -59,17 +57,6 @@ void log_cmd(BYTE	cmd)
 			log0("[%02X] CMD_DIR_READ\n",cmd); break;
 		case	CMD_DIR_CWD:
 			log0("[%02X] CMD_DIR_CWD\n",cmd); break;
-//		case	CMD_DIR_GETCWD:
-//			log0("[%02X] CMD_DIR_GETCWD\n",cmd); break;
-//		case	CMD_DIR_MAKE:
-//			log0("[%02X] CMD_DIR_MAKE\n",cmd); break;
-//		case	CMD_DIR_REMOVE:
-//			log0("[%02X] CMD_DIR_REMOVE\n",cmd); break;
-
-//		case	CMD_DIR_SET_SNAPPATH:
-//			log0("[%02X] CMD_DIR_SET_SNAPPATH\n",cmd); break;
-//		case	CMD_DIR_GET_SNAPPATH:
-//			log0("[%02X] CMD_DIR_GET_SNAPPATH\n",cmd); break;
 
 		case	CMD_FILE_CLOSE:
 			log0("[%02X] CMD_FILE_CLOSE\n",cmd); break;
@@ -83,25 +70,6 @@ void log_cmd(BYTE	cmd)
 			log0("[%02X] CMD_FILE_DELETE\n",cmd); break;
 		case	CMD_FILE_GETINFO:
 			log0("[%02X] CMD_FILE_GETINFO\n",cmd); break;
-//		case	CMD_FILE_OPENAUTOD:
-//			log0("[%02X] CMD_FILE_OPENAUTOD\n",cmd); break;
-//		case	CMD_FILE_OPENAUTOC:
-//			log0("[%02X] CMD_FILE_OPENAUTOC\n",cmd); break;
-//		case	CMD_FILE_OPEN_OVERWRITE:
-//			log0("[%02X] CMD_FILE_OPEN_OVERWRITE\n",cmd); break;
-//		case	CMD_FILE_OPEN_SNAPR:
-//			log0("[%02X] CMD_FILE_OPEN_SNAPR\n",cmd); break;
-//		case	CMD_FILE_OPEN_SNAPW:
-//			log0("[%02X] CMD_FILE_OPEN_SNAPW\n",cmd); break;
-//		case	CMD_FILE_OPEN_STREAMR:
-//			log0("[%02X] CMD_FILE_OPEN_STREAMR\n",cmd); break;
-//		case	CMD_FILE_OPEN_STREAMW:
-//			log0("[%02X] CMD_FILE_OPEN_STREAMW\n",cmd); break;
-//		case	CMD_FILE_COPY:
-//			log0("[%02X] CMD_FILE_COPY\n",cmd); break;
-//		case	CMD_FILE_RENAME:
-//			log0("[%02X] CMD_FILE_RENAME\n",cmd); break;
-
 
 		case	CMD_INIT_READ:
 			log0("[%02X] CMD_INIT_READ\n",cmd); break;
@@ -112,15 +80,6 @@ void log_cmd(BYTE	cmd)
 			log0("[%02X] CMD_READ_BYTES\n",cmd); break;
 		case	CMD_WRITE_BYTES:
 			log0("[%02X] CMD_WRITE_BYTES\n",cmd); break;
-//		case	CMD_REWIND:
-//			log0("[%02X] CMD_REWIND\n",cmd); break;
-//		case	CMD_SEEK:
-//			log0("[%02X] CMD_SEEK\n",cmd); break;
-//		case	CMD_TELL:
-//			log0("[%02X] CMD_TELL\n",cmd); break;
-
-//		case	CMD_GET_STRLEN:
-//			log0("[%02X] CMD_GET_STRLEN\n",cmd); break;
 		case	CMD_EXEC_PACKET:
 			log0("[%02X] CMD_EXEC_PACKET\n",cmd); break;
 
@@ -140,36 +99,9 @@ void log_cmd(BYTE	cmd)
 			log0("[%02X] CMD_VALID_IMG_NAMES\n",cmd); break;
 		case	CMD_IMG_UNMOUNT:
 			log0("[%02X] CMD_IMG_UNMOUNT\n",cmd); break;
-//		case	CMD_IMG_SEEK:
-//			log0("[%02X] CMD_IMG_SEEK\n",cmd); break;
-//		case	CMD_CREATE_IMG:
-//			log0("[%02X] CMD_CREATE_IMG\n",cmd); break;
-//	    case	CMD_GET_FDC_STATUS:
-//			log0("[%02X] CMD_GET_FDC_STATUS\n",cmd); break;
-//	    case	CMD_READ_NEXT_IMG_SEC:
-//			log0("[%02X] CMD_READ_NEXT_IMG_SEC\n",cmd); break;
-//	    case	CMD_LOAD_HR:
-//			log0("[%02X] CMD_LOAD_HR\n",cmd); break;
-
-//		case	CMD_CAS_FTYPE:
-//			log0("[%02X] CMD_CAS_FTYPE\n",cmd); break;
-//      case    CMD_CAS_EMULATE:
-//        	log0("[%02X] CMD_CAS_EMULATE\n",cmd); break;
 
 		case	CMD_GET_CARD_TYPE:
 			log0("[%02X] CMD_GET_CARD_TYPE\n",cmd); break;
-//		case	CMD_SET_BUSY:
-//			log0("[%02X] CMD_SET_BUSY\n",cmd); break;
-//		case	CMD_NOP:
-//			log0("[%02X] CMD_NOP\n",cmd); break;
-//		case	CMD_SYNC:
-//			log0("[%02X] CMD_SYNC\n",cmd); break;
-
-
-//		case	CMD_GET_DATETIME:
-//			log0("[%02X] CMD_GET_DATETIME\n",cmd); break;
-//		case	CMD_SET_DATETIME:
-//			log0("[%02X] CMD_SET_DATETIME\n",cmd); break;
 
 		case	CMD_GET_FW_VER:
 			log0("[%02X] CMD_GET_FW_VER\n",cmd); break;
@@ -206,9 +138,7 @@ void at_process(void)
    LatchAddressIn();
    if (WASWRITE)
 		LatchedAddress=LatchedAddressLast;
-		
-   //log0("%02X\n",LatchedAddress & ADDRESS_MASK);
-			
+					
    switch (LatchedAddress & ADDRESS_MASK)
    {
    case CMD_REG:
@@ -218,7 +148,7 @@ void at_process(void)
 			ReadDataPort();
             received = LatchedData;
             WriteDataPort(STATUS_BUSY);
-			//log0("%02X\n",LatchedData);
+
 #if LOG_CMD == 1
 //			if(DEBUG_ENABLED)
 				log_cmd(received);
