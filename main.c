@@ -1,11 +1,4 @@
 
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "delays.h"
 #include "ILI9341_Driver.h"
@@ -22,13 +15,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if DEVEL
+#define NOW "Devel: compiled at " __TIME__ " on " __DATE__ 
+#else
+#define NOW "Release: compiled at " __TIME__ " on " __DATE__ 
+#endif
+
 void key_callback(uint8_t	scancode,
-				          uint8_t	state);
-/**
-  * @brief  The application entry point.
-  *
-  * @retval None
-  */
+				  uint8_t	state);
+
 int main(void)
 {
     /* Initialize clocks */
@@ -45,17 +40,11 @@ int main(void)
     stdio_init_all();
 
 	cls();
-	printf("IL9341 Acorn Atom Emulator\n");
+	printf("Pico Acorn Atom Emulator\n");
+    printf(NOW "\n");
 
 	printf("Init TFT\n");
 	ILI9341_Init(50 * 1000 * 1000); // SPI pus frequency
-
-	ILISelect();
-	log0("ID4:1:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,1));
-	log0("ID4:2:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,2));
-	log0("ID4:3:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,3));
-
-	log0("Pixel format : %02X\n",ILI9341_ReadReg(LCD_RDDCOLMOD,1));
 
 	ILI9341_Set_Rotation(SCREEN_HORIZONTAL_2);
 	ILI9341_Clear_Screen(BLACK,GREEN);

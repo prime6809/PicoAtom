@@ -93,11 +93,11 @@
 #include "ILI9341_DMA.h"
 #include "status.h"
 
+#define DEBUG_LCD	0
+
 /* Global Variables ------------------------------------------------------------------*/
 volatile uint16_t LCD_HEIGHT = ILI9341_SCREEN_HEIGHT;
 volatile uint16_t LCD_WIDTH	 = ILI9341_SCREEN_WIDTH;
-
-uint8_t	DebugEnabled	= 0;
 
 #if ILI9341_USE_SPI == 1
 /* Initialize SPI */
@@ -111,7 +111,7 @@ void ILI9341_SPI_Init(uint baudrate)
     // Make the SPI pins available to picotool
     bi_decl(bi_3pins_with_func(ILI9341_SPI_MISO, ILI9341_SPI_MOSI, ILI9341_SPI_SCK, GPIO_FUNC_SPI));
 
-	printf("ILI9341_SPI_Init:Init CS\n");
+	logc0(DEBUG_LCD,"ILI9341_SPI_Init:Init CS\n");
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_init(ILI9341_SPI_CS);
     gpio_set_dir(ILI9341_SPI_CS, GPIO_OUT);
@@ -119,13 +119,13 @@ void ILI9341_SPI_Init(uint baudrate)
     // Make the CS pin available to picotool
     bi_decl(bi_1pin_with_name(ILI9341_SPI_CS, "SPI CS"));
 
-	printf("ILI9341_SPI_Init:Init CD\n");
+	logc0(DEBUG_LCD,"ILI9341_SPI_Init:Init CD\n");
 	//Command/Data pin
 	gpio_init(ILI9341_SPI_CD);
 	gpio_set_dir(ILI9341_SPI_CD, GPIO_OUT);
     gpio_put(ILI9341_SPI_CD, 1);
     
-	printf("ILI9341_SPI_Init:Init reset\n");
+	logc0(DEBUG_LCD,"ILI9341_SPI_Init:Init reset\n");
 	//Command/Data pin
 	gpio_init(ILI9341_RESET);
 	gpio_set_dir(ILI9341_RESET, GPIO_OUT);
@@ -133,6 +133,8 @@ void ILI9341_SPI_Init(uint baudrate)
 
 	ILIDeSelect();
 	ILIClearReset();
+
+    ILI9341_DebugParams();
 }
 
 /*Send data (char) to LCD*/
@@ -573,8 +575,7 @@ void ILI9341_Draw_Pixel(uint16_t X,uint16_t Y,uint16_t Colour)
 	if((X >=LCD_WIDTH) || (Y >=LCD_HEIGHT))
 		return;	//OUT OF BOUNDS!
 
-	if (DebugEnabled)
-		log0("ILI9341_Draw_Pixel(%d,%d,%02X)\n",X,Y,Colour);
+	logc0(DEBUG_LCD,"ILI9341_Draw_Pixel(%d,%d,%02X)\n",X,Y,Colour);
 
 	ILISelect();
 
@@ -645,12 +646,19 @@ void ILI9341_Draw_Vertical_Line(uint16_t X, uint16_t Y, uint16_t Height, uint16_
 
 void ILI9341_ReadID(uint8_t *buff)
 {
-//	int	Idx;
-
-	DebugEnabled++;
-
 	ILISelect();
 	ILI9341_Write_Command_Get(LCD_RDDMADCTL,buff,2);	// Get display ID
+}
 
-	DebugEnabled--;
+void ILI9341_DebugParams(void)
+{
+	ILISelect();
+
+	logc0(DEBUG_LCD,"ID4:1:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,1));
+	logc0(DEBUG_LCD,"ID4:2:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,2));
+	logc0(DEBUG_LCD,"ID4:3:%02X\n",ILI9341_ReadReg(LCD_READ_ID4,3));
+
+	logc0(DEBUG_LCD,"Pixel format : %02X\n",ILI9341_ReadReg(LCD_RDDCOLMOD,1));
+
+	ILIDeSelect();
 }

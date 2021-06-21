@@ -421,5 +421,6 @@ void ILI9341_Draw_Vertical_Line(uint16_t X, uint16_t Y, uint16_t Height, uint16_
 
 void ILI9341_ReadID(uint8_t *buff);
 
+void ILI9341_DebugParams(void);
 #endif
 

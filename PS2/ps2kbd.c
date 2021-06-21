@@ -38,6 +38,8 @@
 #include "delays.h"
 #include "status.h"
 
+#define DEBUG_PS2	0
+
 #define LED_PIN		PICO_DEFAULT_LED_PIN	
 #define LED_MASK 	(1ul << LED_PIN)
 
@@ -125,7 +127,7 @@ uint8_t ps2_kbd_get_scancode(void)
 
 void ps2_kbd_send(uint8_t data)
 {
-	log0("kbd_send(%2X), kbd_status=%4X, kbd_bit_n=%d\n",data,kbd_status,kbd_bit_n);
+	logc0(DEBUG_PS2,"kbd_send(%2X), kbd_status=%4X, kbd_bit_n=%d\n",data,kbd_status,kbd_bit_n);
 	
 	// This behaviour isn't the most desirable, but it's the easiest and proved to be reliable.
 	while(kbd_status & (KBD_SEND | KBD_RECEIVE)) 
@@ -201,8 +203,6 @@ void PS2_KBD_INT(void)
 {
 	uint8_t	bit_in;
 	
-	//printf("%02X ",kbd_bit_n);
-
 	if(kbd_status & KBD_SEND)
 	{
 		gpio_xor_mask(LED_MASK);
@@ -264,8 +264,9 @@ void PS2_KBD_INT(void)
 				    ((kbd_parity==0) && (kbd_n_bits==1)))
 					ps2_kbd_queue_scancode(kbd_buffer);
 
-//				log0("scan=%2X, parity=%d, kbd_n_bits=%d\n",kbd_buffer,kbd_parity,kbd_n_bits);
-	
+#if DEBUG_PS2
+				log0("scan=%2X, parity=%d, kbd_n_bits=%d\n",kbd_buffer,kbd_parity,kbd_n_bits);
+#endif	
 				kbd_buffer = 0;
 				kbd_bit_n = 0;
 				kbd_parity = 0;

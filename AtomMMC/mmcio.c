@@ -11,6 +11,7 @@
 #include "atmmc2io.h"
 #include "diskio.h"
 #include "hexout.h"
+#include "status.h"
 
 
 /* Definitions for MMC/SDC command */
@@ -24,7 +25,7 @@
 #define CMD55  (0x40+55)   /* APP_CMD */
 #define CMD58  (0x40+58)   /* READ_OCR */
 
-
+#define DEBUG_SD  0
 
 void INIT_SPI(void)
 {
@@ -104,7 +105,7 @@ void INIT_SPI(void)
 
 	LL_SPI_Enable(DISK_SPI);
 #elif  (PLATFORM==PLATFORM_PIPICO)
-   printf("SD_SPI_Init:Init SPI\n");
+   logc0(DEBUG_SD,"SD_SPI_Init:Init SPI\n");
    // This example will use SPI0 at 0.5MHz.
    spi_init(SD_SPI, 10 * 1000 * 1000);
    spi_set_format(SD_SPI,  8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -115,7 +116,7 @@ void INIT_SPI(void)
    // Make the SPI pins available to picotool
    bi_decl(bi_3pins_with_func(SD_SPI_MISO_Pin, SD_SPI_MOSI_Pin, SD_SPI_SCK_Pin, GPIO_FUNC_SPI));
 
-	printf("SD_SPI_Init:Init CS\n");
+	logc0(DEBUG_SD,"SD_SPI_Init:Init CS\n");
    // Chip select is active-low, so we'll initialise it to a driven-high state
    gpio_init(SDCS_Pin);
    gpio_set_dir(SDCS_Pin, GPIO_OUT);
