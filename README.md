@@ -30,5 +30,5 @@ Pico pin | Purpose | Purpose | Pico pin
 
 All pins not explicitly specified are no connection.
 
-It is suggested that a bidirectional level shifter is uded between the PS/2 keyboard and the Pico.
+It is suggested that a bidirectional level shifter is used between the PS/2 keyboard and the Pico.
 This allows the Pico to send commands to the keyboard such as toggling LEDs etc.
