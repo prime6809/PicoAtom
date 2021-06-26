@@ -3,7 +3,7 @@
 // Set to 1 to enable compilation of trace code,
 // set to 0 to disable
 
-#define TRACE_ENABLED	1
+#define TRACE_ENABLED	0
 
 /* Fake6502 requires you to provide two external     *
  * functions:                                        *

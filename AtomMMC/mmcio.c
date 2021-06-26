@@ -26,7 +26,7 @@
 #define CMD55  (0x40+55)   /* APP_CMD */
 #define CMD58  (0x40+58)   /* READ_OCR */
 
-#define DEBUG_SD  0
+#define DEBUG_SD  1
 
 void INIT_SPI(void)
 {

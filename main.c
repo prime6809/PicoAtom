@@ -21,8 +21,16 @@
 #define NOW "Release: compiled at " __TIME__ " on " __DATE__ 
 #endif
 
+volatile uint32_t old_clockticks6502 = 0;                     
+volatile uint32_t old_instructions = 0;
+
+struct repeating_timer monitor_timer;
+bool monitor_timer_callback(struct repeating_timer *t);
+bool monitor_on = false;
+
 void key_callback(uint8_t	scancode,
 				  uint8_t	state);
+
 
 int main(void)
 {
@@ -36,31 +44,36 @@ int main(void)
     set_sys_clock_khz(sys_freq, true);
 
 
-	/* Initialize all configured peripherals */
+    /* Initialize all configured peripherals */
     stdio_init_all();
 
-	cls();
-	printf("Pico Acorn Atom Emulator\n");
-  printf(NOW "\n");
+    cls();
+    printf("Pico Acorn Atom Emulator\n");
+    printf(NOW "\n");
 
-	printf("Init TFT\n");
-	ILI9341_Init(50 * 1000 * 1000); // SPI pus frequency
+    printf("Init TFT\n");
+    ILI9341_Init(50 * 1000 * 1000); // SPI pus frequency
 
-	ILI9341_Set_Rotation(SCREEN_HORIZONTAL_2);
-	ILI9341_Clear_Screen(BLACK,GREEN);
+    ILI9341_Set_Rotation(SCREEN_HORIZONTAL_2);
+    ILI9341_Clear_Screen(BLACK,GREEN);
 
-	printf("PS/2 Keyboard init\n");
-	ps2_kbd_init();
+    printf("PS/2 Keyboard init\n");
+    ps2_kbd_init();
   
-	matrix_init(&Atom_output_key,&key_callback);
+    matrix_init(&Atom_output_key,&key_callback);
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
-	while (1)
-	{
-		AtomInit();
-		AtomGo();
-	}
+	cancel_repeating_timer(&monitor_timer);	// Incase it was already running.....
+	add_repeating_timer_ms(-1000, monitor_timer_callback, NULL, &monitor_timer);
+
+    AtomInit();
+    AtomGo();
+
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+    
+    }
 }
 
 void key_callback(uint8_t	scancode,
@@ -70,12 +83,36 @@ void key_callback(uint8_t	scancode,
 	{
 		switch(scancode)
 		{
-			case SCAN_CODE_F10 :
-				log0("\n");
+#if TRACE_ENABLED            
+			case SCAN_CODE_F9 :
+                ToggleTrace();
+				log0("Trace: %d\n",DoTrace);
 				break;
+#endif
+			case SCAN_CODE_F10 :
+				Throttle6502 = !Throttle6502;
+                log0("CPU throttled : %d\n",Throttle6502);
+				break;
+
+            case SCAN_CODE_F11 :
+                monitor_on = !monitor_on;
+                log0("Frequency monitor: %d\n",monitor_on);
+                break;
 		}
 	}
 }
+
+bool monitor_timer_callback(struct repeating_timer *t)
+{
+    if(monitor_on)
+        log0("6502: %ld, %ld\n",(clockticks6502 - old_clockticks6502),(instructions - old_instructions));
+
+    old_clockticks6502=clockticks6502;
+    old_instructions=instructions;
+
+    return true;
+}
+
 
 
 /**

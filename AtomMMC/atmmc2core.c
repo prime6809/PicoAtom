@@ -348,6 +348,15 @@ void at_process(void)
                WriteEEPROM(EE_PORTBVALU, byteValueLatch);
                WriteDataPort(STATUS_OK);
             }
+#else
+            else if (received == CMD_READ_PORT) // read portb
+            {
+               WriteDataPort(0xFF);
+            }
+            else if (received == CMD_WRITE_PORT) // write port B value
+            {
+               WriteDataPort(STATUS_OK);
+            }
 #endif
             else if (received == CMD_GET_FW_VER) // read firmware version
             {

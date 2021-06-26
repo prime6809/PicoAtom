@@ -25,7 +25,7 @@ typedef struct
 
 extern mc6847_t	MC6847_Screen;
 
-#define DEBUG_6847_PIN		16
+#define DEBUG_VDG_6847_PIN		16
 
 // Flags that control operation, on the real chip these are mostly io lines
 #define MC6847_GM0			0x0001

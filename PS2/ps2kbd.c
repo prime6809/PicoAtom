@@ -70,6 +70,8 @@ void ps2_kbd_init()
 	kbd_status = 0;
 	kbd_parity = 0;
 
+	logc0(DEBUG_PS2,"PS/2 Debug enabled.\n");
+
 	// PS/2 Clock pin, opendrain output, so it will be at whatever level
 	// the keyboard drives it at *UNLESS* we drive it low.
 	gpio_init(PS2_CLK_Pin);
@@ -79,10 +81,10 @@ void ps2_kbd_init()
 	// Set interrupts, enabled on clock pin falling edge
 	gpio_set_irq_enabled_with_callback(PS2_CLK_Pin, GPIO_IRQ_EDGE_FALL, true, &ps2_keyboard_callback);
 
-	// Setup PS/2 Data line, in A12
+	// Setup PS/2 Data line, 
 	gpio_init(PS2_DAT_Pin);
 	gpio_set_dir(PS2_DAT_Pin, false);
-	//gpio_set_pulls(PS2_DAT_Pin, true, false);
+	gpio_set_pulls(PS2_DAT_Pin, true, false);
 
 	gpio_init(LED_PIN);
 	gpio_set_dir(LED_PIN, true);
@@ -92,6 +94,7 @@ void ps2_kbd_init()
 	ps2_kbd_send(KBD_CMD_ALL_MB);
 	ps2_kbd_update_leds();
 	log0("PS/2 Init done\n");
+	logc0(DEBUG_PS2,"CLK pin hysteresis : %d",gpio_is_input_hysteresis_enabled(PS2_CLK_Pin));
 }
 
 
@@ -250,6 +253,7 @@ void PS2_KBD_INT(void)
 		switch (kbd_bit_n)
 		{
 			case 1 :						// ignore start bit
+				kbd_status |= KBD_RECEIVE;
 				break;
 					
 			case 10 :						// parity bit
@@ -271,6 +275,7 @@ void PS2_KBD_INT(void)
 				kbd_bit_n = 0;
 				kbd_parity = 0;
 				kbd_n_bits = 0;
+				kbd_status &= ~KBD_RECEIVE;
 				break;
 				
 			default :						// data bits
@@ -288,6 +293,9 @@ void PS2_KBD_INT(void)
 
 void ps2_keyboard_callback(uint gpio, uint32_t events)
 {
+//	if (((kbd_status & KBD_REQ_SEND)!=0))
+//		printf("#");
+
 	if ((PS2_CLK_Pin == gpio) && (events & GPIO_IRQ_EDGE_FALL)  && ((kbd_status & KBD_REQ_SEND)==0))
 	{
 		PS2_KBD_INT();	

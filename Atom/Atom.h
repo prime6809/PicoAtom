@@ -84,11 +84,50 @@
 #define ATOM_SPEAKER_MASK	0x04
 #define ATOM_CSS_MASK		0x08
 
+// Set to true by VDG FS callback, to flag that the CPU should run.
+extern volatile bool Run6502;
+
+// Set to true to throttle the emulated CPU to approx 1MHz, set to false to let it
+// run as fast as it can.....
+extern volatile bool Throttle6502;
+
 void AtomInit(void);
 void AtomGo(void);
 void AtomReadKey(void);
 void ResetMachine(void);
 void Atom_output_key(uint8_t	KeyCode, uint8_t	State);
 void AtomHook(void);
+
+// VIA 6522 registers
+
+#define DATAB       0x00
+#define DATAA       0x01
+#define DDRB        0x02
+#define DDRA        0x03
+#define T1CL        0x04
+#define T1CH        0x05
+#define T1LL        0x06
+#define T1LH        0x07
+#define T2CL        0x08
+#define T2CH        0x09
+#define SHIFT       0x0A
+#define AUXCR       0x0B
+#define PCR         0x0C
+#define INTFR       0x0D
+#define INTER       0x0E
+#define DATAAA      0x0F
+
+// VIA AUX register bitmaps,
+// Shift register not currently emulated, so not defined
+#define PB7OUT      0x80
+#define T1INTC      0x40
+#define CDOWN_PB6   0x20
+
+#define LATCHEN     0x01
+
+// Interrupt enable / flag register
+#define INTANY      0x80
+#define INTT1       0x40
+#define INTT2       0x20
 
 #endif /* ATOM_ATOM_H_ */

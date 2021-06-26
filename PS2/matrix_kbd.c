@@ -176,10 +176,7 @@ void matrix_check_output(void)
 					if(LastScanCode!=SCAN_CODE_RELEASE)
 						ResetMachine();	// Atomulator compatibility.
 					break;
-				
-				case SCAN_CODE_F11 :
-					break;
-				
+								
 				default: 
 					if(Scancode<=MAX_SCANCODE)
 					{

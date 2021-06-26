@@ -14,8 +14,7 @@
 #include "main.h"
 #include "Atom.h"
 
-#define DEBUG_FREQ 0
-#define DEBUG_MODE 1
+#define DEBUG_VDG_FREQ 0
 
 mc6847_t	MC6847_Screen;
 
@@ -76,24 +75,25 @@ void MC6847_InitTimers(void)
 	// Initialize 120Hz signal for frame sync
 	cancel_repeating_timer(&fs_timer);	// Incase it was already running.....
 	add_repeating_timer_us(-8333, fs_timer_callback, NULL, &fs_timer);
-
-#if DEBUG_FREQ == 1
+	
+#if DEBUG_VDG_FREQ == 1
 	/* Config PA4 as an output so we can toggle to debug frequency */
 
-	gpio_init(DEBUG_6847_PIN);
-	gpio_set_dir(DEBUG_6847_PIN,true);
+	gpio_init(DEBUG_VDG_6847_PIN);
+	gpio_set_dir(DEBUG_VDG_6847_PIN,true);
 #endif
 }
 
 bool fs_timer_callback(struct repeating_timer *t) 
 {
 	//printf("Repeat at %lld\n", time_us_64());
-
+	
 	MC6847_Screen.FS = MC6847_Screen.FS ^ 0x01;
 
-#if DEBUG_FREQ == 1
-	gpio_xor_mask(1ul << DEBUG_6847_PIN);
+#if DEBUG_VDG_FREQ == 1
+	gpio_xor_mask(1ul << DEBUG_VDG_6847_PIN);
 #endif
+	Run6502=true;
 
 	matrix_check_output();
 

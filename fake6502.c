@@ -1296,7 +1296,6 @@ void exec6502(uint32_t tickcount)
     	TracePC();
     	opcode = read6502(pc++);
         status |= FLAG_CONSTANT;
-
         penaltyop = 0;
         penaltyaddr = 0;
 
