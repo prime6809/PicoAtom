@@ -62,7 +62,7 @@ int main(void)
     matrix_init(&Atom_output_key,&key_callback);
 
     cancel_repeating_timer(&monitor_timer);	// Incase it was already running.....
-	add_repeating_timer_ms(-1000, monitor_timer_callback, NULL, &monitor_timer);
+	  add_repeating_timer_ms(-1000, monitor_timer_callback, NULL, &monitor_timer);
 
     AtomInit();
     AtomGo();

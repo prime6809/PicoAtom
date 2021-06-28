@@ -639,8 +639,6 @@ void ScreenSaverRun(void)
 	int		XPos;
 	int 	YPos			= rand() % ScreenHeight;
 
-	log0("ScreenWidth=%d, ScreenHeight=%d\n",ScreenWidth,ScreenHeight);
-
 	ILI9341_Vars.Ink=BLACK;
 	ILI9341_Vars.Paper=RandomColour();
 
