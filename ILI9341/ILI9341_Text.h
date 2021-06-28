@@ -87,6 +87,9 @@ void ILI9341_Print_TextCount(const char	*Text,
 #define ILI9341_Print_CharWillFit()	((ILI9341_Vars.PrintX + ILI9341_CharWidth()) <= LCD_WIDTH)
 #define ILI9341_GotoXY(x,y)			do { ILI9341_Vars.PrintX = x * ILI9341_Vars.TextScale * ILI9341_Vars.Font->Width; ILI9341_Vars.PrintY = y * ILI9341_Vars.TextScale * ILI9341_Vars.Font->Height; } while(0)
 
+#define ILI9341_ScreenCharWidth()	(LCD_WIDTH / ILI9341_CharWidth())
+#define ILI9341_ScreenCharHeight()	(LCD_HEIGHT / ILI9341_CharHeight())
+
 #define ILI9341_SetFont(NewFont)	ILI9341_Vars.Font=(font_t *)NewFont
 
 #endif /* ILI9341_ILI9341_TEXT_H_ */

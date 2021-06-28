@@ -93,8 +93,11 @@ void ps2_kbd_init()
 
 	ps2_kbd_send(KBD_CMD_ALL_MB);
 	ps2_kbd_update_leds();
-	log0("PS/2 Init done\n");
-	logc0(DEBUG_PS2,"CLK pin hysteresis : %d",gpio_is_input_hysteresis_enabled(PS2_CLK_Pin));
+
+	if ((kbd_status & KBD_TIMEOUT) == 0)
+		log0("PS/2 Init done\n");
+	else
+		log0("PS/2 Init timeout\n");
 }
 
 
@@ -130,13 +133,19 @@ uint8_t ps2_kbd_get_scancode(void)
 
 void ps2_kbd_send(uint8_t data)
 {
-	logc0(DEBUG_PS2,"kbd_send(%2X), kbd_status=%4X, kbd_bit_n=%d\n",data,kbd_status,kbd_bit_n);
+	absolute_time_t kbd_timeout; 
+	absolute_time_t now; 
 	
+	logc0(DEBUG_PS2,"kbd_send(%2X), kbd_status=%4X, kbd_bit_n=%d\n",data,kbd_status,kbd_bit_n);
+
 	// This behaviour isn't the most desirable, but it's the easiest and proved to be reliable.
 	while(kbd_status & (KBD_SEND | KBD_RECEIVE)) 
 	//	_delay_ms(5);
 		asm volatile ("nop");	
-	
+
+	// Timeout 1000ms (1s)
+	kbd_timeout = make_timeout_time_ms(1000);
+
 	// Initiate request-to-send, the actual sending of the data
 	// is handled in the ISR.
 	kbd_status |= KBD_REQ_SEND;
@@ -160,10 +169,18 @@ void ps2_kbd_send(uint8_t data)
 	gpio_set_dir(PS2_CLK_Pin, false);
 	gpio_put(PS2_CLK_Pin,true);
 
-	// wait for transmit to finish
-	while(kbd_status & (KBD_SEND | KBD_RECEIVE)) 
-	//	_delay_ms(5);
-		asm volatile ("nop");	
+	// wait for transmit to finish, or timeout
+	do 
+	{
+		now = get_absolute_time(); 
+	} while ((kbd_status & (KBD_SEND | KBD_RECEIVE)) && (absolute_time_diff_us(now,kbd_timeout) > 0));
+
+	// If we timed out, clear transmit flag and set timeout flag.
+	if (absolute_time_diff_us(now,kbd_timeout) <= 0)
+	{
+		kbd_status |= KBD_TIMEOUT;
+		kbd_status &= ~KBD_SEND;
+	}
 }
 
 void ps2_kbd_set_leds(uint8_t	kbleds)
@@ -183,19 +200,6 @@ void ps2_kbd_update_leds(void)
 	
 	ps2_kbd_set_leds(val);
 }
-
-
-#if 0
-unsigned char kbd_do_lookup(const unsigned char *lut, uint8_t sc)
-{
-	uint8_t	i;
-	
-	for(i = 0; lut[i]; i += 2)
-		if(sc == lut[i])
-			return lut[i + 1];
-	return 0;
-}
-#endif 
 
 uint16_t ps2_kbd_get_status()
 {
@@ -293,9 +297,6 @@ void PS2_KBD_INT(void)
 
 void ps2_keyboard_callback(uint gpio, uint32_t events)
 {
-//	if (((kbd_status & KBD_REQ_SEND)!=0))
-//		printf("#");
-
 	if ((PS2_CLK_Pin == gpio) && (events & GPIO_IRQ_EDGE_FALL)  && ((kbd_status & KBD_REQ_SEND)==0))
 	{
 		PS2_KBD_INT();	

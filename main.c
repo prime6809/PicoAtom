@@ -1,4 +1,3 @@
-
 #include "main.h"
 #include "delays.h"
 #include "ILI9341_Driver.h"
@@ -62,7 +61,7 @@ int main(void)
   
     matrix_init(&Atom_output_key,&key_callback);
 
-	cancel_repeating_timer(&monitor_timer);	// Incase it was already running.....
+    cancel_repeating_timer(&monitor_timer);	// Incase it was already running.....
 	add_repeating_timer_ms(-1000, monitor_timer_callback, NULL, &monitor_timer);
 
     AtomInit();
@@ -109,6 +108,8 @@ bool monitor_timer_callback(struct repeating_timer *t)
 
     old_clockticks6502=clockticks6502;
     old_instructions=instructions;
+
+    ScreenSaverPoll();
 
     return true;
 }

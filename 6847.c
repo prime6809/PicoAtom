@@ -109,7 +109,13 @@ void MC6847_Init(uint8_t	*ScreenMem,
 	MC6847_Screen.MemSize=MemSize;
 	MC6847_InitTimers();
 
+	MC6847_ReInit();
+}
+
+void MC6847_ReInit(void)
+{
 	ILI9341_SetFont(&m6847_font);
+	SetPixelFormat(PX_DEFAULT);
 	ILI9341_Clear_Screen(BLACK,GREEN);
 	ILI9341_AllOff();
 }
@@ -339,9 +345,9 @@ void MC6847_UpdateGraph(void)
 			for(PxNo=0; PxNo < ModeTable[Mode].pmul; PxNo++)
 			{
 				if (ModeTable[Mode].bpp==2)
-					Colour=CGColours[MC6847_GetCSS()][(Pixels & 0xC0) >> 6];
+					Colour=SwapColour(CGColours[MC6847_GetCSS()][(Pixels & 0xC0) >> 6]);
 				else
-					Colour=RGColours[MC6847_GetCSS()][(Pixels & 0x80) >> 7];
+					Colour=SwapColour(RGColours[MC6847_GetCSS()][(Pixels & 0x80) >> 7]);
 
 				Pixels=Pixels << ModeTable[Mode].bpp;
 

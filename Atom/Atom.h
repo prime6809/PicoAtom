@@ -97,6 +97,7 @@ void AtomReadKey(void);
 void ResetMachine(void);
 void Atom_output_key(uint8_t	KeyCode, uint8_t	State);
 void AtomHook(void);
+void ScreenSaverPoll(void);
 
 // VIA 6522 registers
 
@@ -129,5 +130,8 @@ void AtomHook(void);
 #define INTANY      0x80
 #define INTT1       0x40
 #define INTT2       0x20
+
+// screensaver countdown in seconds
+#define SCREENSAVER_COUNT (60 * 5)
 
 #endif /* ATOM_ATOM_H_ */

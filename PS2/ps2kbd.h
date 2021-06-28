@@ -79,6 +79,7 @@
 #define	KBD_LOCKED		0x0800
 
 #define KBD_REQ_SEND	0x1000
+#define KBD_TIMEOUT		0x2000
 
 #define	KBD_LED_CAPS	0x04
 #define KBD_LED_NUMLOCK	0x02

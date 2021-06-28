@@ -73,6 +73,7 @@ extern mc6847_t	MC6847_Screen;
 #define MC6847_SCANLINES	262
 
 void MC6847_Init(uint8_t *ScreenMem, uint16_t MemSize, uint16_t InitFlags);
+void MC6847_ReInit(void);
 void MC6847_Update(void);
 void MC6847_UpdateByte(uint16_t	Offset, uint8_t	Byte);
 void MC6847_WriteASCII(char *ToWrite, uint16_t AtPos);

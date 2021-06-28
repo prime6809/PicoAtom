@@ -89,6 +89,19 @@ volatile uint32_t clockticks6502last = 0;
 volatile bool Run6502;
 volatile bool Throttle6502 = 1;
 
+// Screensaver
+#define SS_STOPED	0
+#define SS_START	1
+#define SS_RUN		1
+#define SS_STOP		2
+
+volatile uint32_t   countdown   = SCREENSAVER_COUNT;
+volatile uint8_t    screensaver = SS_STOPED;
+
+void ScreenSaverStart(void);
+void ScreenSaverRun(void);
+void ScreenSaverEnd(void);
+
 void AtomInit(void)
 {
 	uint8_t				Idx;
@@ -147,10 +160,18 @@ void AtomGo(void)
 
 	while (1)
 	{
-		if (Run6502)
+		if ((Run6502) && (SS_STOPED == screensaver))
 		{
 			Run6502 = Throttle6502 ? false : true;
 			exec6502(CYCLES_PER_TIMER);
+		}
+		else if (SS_RUN == screensaver)
+		{
+			ScreenSaverRun();
+		} 
+		else if (SS_STOP == screensaver)
+		{
+			ScreenSaverEnd();
 		}
 	}
 }
@@ -557,6 +578,92 @@ void Atom_output_key(uint8_t	KeyCode,
 		Keyrows[KeyCode & 0x0F] &= ~Mask;
 	else
 		Keyrows[KeyCode & 0x0F] |= Mask;
+
+	countdown = SCREENSAVER_COUNT;
+
+	if(SS_RUN == screensaver)
+	{
+		screensaver = SS_STOP;
+	}	
 }
 
+void ScreenSaverPoll(void)
+{
+    if ((0 == countdown) && (!screensaver))
+    {
+		ScreenSaverStart();
+    }
+    else
+        countdown--;
+}
 
+void ScreenSaverStart(void)
+{
+	screensaver = SS_START;
+	log0("Screensaver on!\n");
+	ILI9341_Clear_Screen(GREEN,BLACK);
+	ILI9341_SetFont(&beeb_font);
+	ILI9341_Vars.TextScale = 2;
+}
+
+uint16_t RandomColour()
+{
+	uint16_t	Result = rand() % 8;
+
+	switch (Result)
+	{
+		case 0x00	: Result=GREEN;   break;
+		case 0x01	: Result=YELLOW;  break;
+		case 0x02	: Result=BLUE; 	  break;
+		case 0x03	: Result=RED;     break;
+		case 0x04	: Result=WHITE;   break;
+		case 0x05	: Result=CYAN; 	  break;
+		case 0x06	: Result=MAGENTA; break;
+		case 0x07	: Result=ORANGE;  break;
+		default 	: Result=GREEN;   break;
+	}
+	return Result;
+}
+
+#define OUTBUF_LEN	32
+
+void ScreenSaverRun(void)
+{
+	char 	Text[] = " PicoAtom - press a key.....";
+	char	OutBuf[OUTBUF_LEN+1] = "\0";
+	int		ScreenWidth 	= ILI9341_ScreenCharWidth();
+	int 	ScreenHeight 	= ILI9341_ScreenCharHeight();
+	int 	charpos;
+	int		firstchar;
+	int 	lastchar;
+	int		XPos;
+	int 	YPos			= rand() % ScreenHeight;
+
+	log0("ScreenWidth=%d, ScreenHeight=%d\n",ScreenWidth,ScreenHeight);
+
+	ILI9341_Vars.Ink=BLACK;
+	ILI9341_Vars.Paper=RandomColour();
+
+	for(charpos = 0-strlen(Text); (charpos < ScreenWidth) && (SS_RUN == screensaver); charpos++)
+	{
+		_delay_ms(125);	
+
+		XPos		= (charpos < 0 ) ? 0 : charpos;
+		firstchar 	= (charpos >= 0) ? 0 : charpos*-1;
+		lastchar	= firstchar+(ScreenWidth-(XPos + firstchar))+1; 
+		
+		snprintf(OutBuf,lastchar,"%s",&Text[firstchar]);
+
+		ILI9341_GotoXY(XPos,YPos);
+		ILI9341_Print_Text(OutBuf);
+	}
+}
+
+void ScreenSaverEnd(void)
+{
+	log0("Screensaver off!\n");
+	MC6847_ReInit();
+	MC6847_Update();
+
+	screensaver = SS_STOPED;
+}
